@@ -1,0 +1,70 @@
+{
+  "info": {
+    "_postman_id": "675df910-f50c-45e1-b2e2-520d55ba8043",
+    "name": "ISCIM",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "30590908"
+  },
+  "item": [
+    {
+      "name": "http://localhost:8080/api/clientes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"nome\": \"Antonio Fenias Fabião Massangai\",\r\n  \"email\": \"mangai@email.com\",\r\n  \"telefone\": \"841334567\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/clientes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "clientes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost:8080/api/pedidos/cliente/2",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"descricao\": \"Compra de material de escritório\",\r\n  \"valor\": 2500.00,\r\n  \"clienteId\": 2\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/pedidos/cliente/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "pedidos",
+            "cliente",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
