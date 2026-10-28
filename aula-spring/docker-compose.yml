@@ -1,0 +1,44 @@
+# Arranque:  docker compose up -d --build
+# API:       http://localhost:8080/api/clientes   (no telemóvel: http://IP-DO-PC:8080/api/clientes)
+# Parar:     docker compose down        (apagar também os dados: docker compose down -v)
+name: iscim-aula
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: docker/db/Dockerfile
+    image: iscim-aula-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: iscim2026
+    volumes:
+      - db_data:/var/lib/mysql
+    # Porta 3307 no PC (a 3306 costuma estar ocupada pelo XAMPP) — só para ver os dados num cliente SQL.
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: .
+    image: iscim-aula-api
+    restart: unless-stopped
+    environment:
+      # Sobrepõem o application.properties: a BD está no serviço "db", não em localhost.
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/spring_db?useSSL=false&serverTimezone=Africa/Maputo&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: iscim2026
+      SPRING_JPA_SHOW_SQL: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    # Aberta na rede de propósito: os telemóveis dos alunos (mesmo Wi-Fi) chamam esta API.
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:

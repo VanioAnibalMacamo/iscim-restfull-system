@@ -1,0 +1,35 @@
+# Para quem RECEBE a API: não precisa do código, só deste ficheiro e das imagens.
+# Imagens por pen (ficheiro .tar):  docker load -i iscim-aula.tar
+# Imagens pelo Docker Hub:          troque "iscim-aula-api" / "iscim-aula-db" por "UTILIZADOR/iscim-aula-api" / "UTILIZADOR/iscim-aula-db"
+# Arrancar:                         docker compose -f docker-compose.partilha.yml up -d
+name: iscim-aula
+
+services:
+  db:
+    image: iscim-aula-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: iscim2026
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    image: iscim-aula-api
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/spring_db?useSSL=false&serverTimezone=Africa/Maputo&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: iscim2026
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
