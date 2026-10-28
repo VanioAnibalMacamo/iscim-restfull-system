@@ -1,0 +1,35 @@
+# Para quem RECEBE a API pelo Docker Hub: só precisa do Docker Desktop e deste ficheiro.
+# Arrancar:  docker compose -f docker-compose.hub.yml up -d     (a 1.ª vez descarrega ~1 GB)
+# Testar:    http://localhost:8080/api/clientes
+# Parar:     docker compose -f docker-compose.hub.yml down
+name: iscim-aula
+
+services:
+  db:
+    image: eleuterio1213/iscim-aula-db:1.0
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: iscim2026
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    image: eleuterio1213/iscim-aula-api:1.0
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/spring_db?useSSL=false&serverTimezone=Africa/Maputo&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: iscim2026
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
